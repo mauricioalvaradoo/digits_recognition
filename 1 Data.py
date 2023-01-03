@@ -1,14 +1,21 @@
+"""""
 ## Setting el dataset
-# Se usará la base de datos de `The Mist Database`: http://yann.lecun.com/exdb/mnist/.
 
-# La base de datos se encuentra divida en 60_000 imagenes de _training_ y 10_000 de _testing_.
-# Para este proyecto se unirá toda la base y se separará posteriormente con `sklearn`. Cada imagen
-# es de 28x28 pixeles. Es decir en total observaciones con 784 pixeles.
+Se usara la base de datos de `The Mist Database`: http://yann.lecun.com/exdb/mnist/.
+La base de datos se encuentra divida en 60_000 imagenes de _training_ y 10_000 de
+_testing_. Para este proyecto se unira toda la base y se separara posteriormente
+con `sklearn`.
 
+Dado que el dataset original contiene imagenes de 28x28 pixeles, al transformarlos
+a formato numerico se colocan de manera horizontal donde 28x28 = 784. En este caso,
+hay 56 mil imagenes. Las columnas representan los pixeles que han sido vectorizados. 
+"""""
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 from functions import load_data 
-import numpy as np
-import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
@@ -38,6 +45,33 @@ X_train.to_pickle("./data/X_train.pkl")
 y_train.to_pickle("./data/y_train.pkl")
 X_test.to_pickle("./data/X_test.pkl")
 y_test.to_pickle("./data/y_test.pkl")
+
+
+
+# Grafica 1 ========================================================
+X_train = np.asarray(X_train)
+y_train = np.asarray(y_train)
+X_test = np.asarray(X_test)
+y_test = np.asarray(y_test)
+
+m, n = X_train.shape
+pixeles = 28
+
+fig, axs = plt.subplots(6, 6, figsize=(6,6))
+plt.tight_layout()
+np.random.seed(19) 
+
+for i, ax in enumerate(axs.flat):
+    random_index = np.random.randint(m)
+
+    X_resized = X_train[random_index].reshape((pixeles,pixeles))
+    ax.imshow(X_resized, cmap="gray")
+    
+    ax.set_title(int(y_train[random_index])) # Labels
+    ax.set_axis_off()
+
+plt.savefig("./figures/digits.pdf")
+
 
 
 ## Referencias:
