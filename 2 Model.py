@@ -1,12 +1,13 @@
 # Hand-Written Digits Recognition
-
 import numpy as np
 import pandas as pd
+from numba import njit
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 import tensorflow as tf
 from tensorflow.keras.layers import Dense
 from tensorflow.keras import Sequential, Input
-from tensorflow.keras.losses import BinaryCrossentropy
+from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.optimizers import Adam
 # import warnings
 # warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -34,13 +35,13 @@ Se usará una arquitectura neuronal que consiste en lo siguiente:
 * Layer3 = 1 neuronas
 
 """""
-
+tf.random.set_seed(19)
 model = Sequential(
     [
         Input(shape = (784,)),
         Dense(units = 50, activation = "sigmoid", name = "Layer1"),
         Dense(units = 20, activation = "sigmoid", name = "Layer2"),
-        Dense(units = 1,  activation = "sigmoid", name = "Layer3")
+        Dense(units = 10,  activation = "softmax", name = "Layer3")
 
     ], name = "Modelo1"
 )
@@ -49,15 +50,35 @@ model = Sequential(
 
 
 model.compile(
-    loss = BinaryCrossentropy(),
-    optimizer = Adam(0.001),
+    loss = SparseCategoricalCrossentropy(),
+    optimizer = Adam(0.01),
 )
 
-model.fit(
+
+results = model.fit(
     X_train, y_train,
-    epochs = 20,
+    epochs = 100,
     verbose = False
 )
 
 # GRAFICO DE PERDIDA!
+import matplotlib.pyplot as plt
+plt.xlabel("#Epoca")
+plt.ylabel("Magnitud de perdida")
+plt.plot(results.history["loss"])
+
+#MATRIZ DE CONFUSION
+y_hat=results.predict(X_test)
+
+y_hat = np.where(y_hat > 0.5, 1, 0)
+conf = confusion_matrix(y_test, y_hat)
+
+conf_plot = ConfusionMatrixDisplay(
+    confusion_matrix = conf,
+)
+
+conf_plot.plot()
+
+# HACER CROSS VALIDATION 
+
 # GUARDAR MODELO
