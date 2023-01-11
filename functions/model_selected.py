@@ -10,50 +10,7 @@ from tensorflow.keras.optimizers import Adam
 
 
 
-def model_selection_list():
-    
-    random_seed = int(random.choice(np.linspace(1, 10000, 10000)))
-    tf.random.set_seed(random_seed)
-
-
-    model_1 = Sequential(
-        [
-            Dense(40, activation = "relu"),
-            Dense(20, activation = "relu"),
-            Dense(10, activation = "linear")
-        ],
-        name="model_selection_1"
-    )
-
-    model_2 = Sequential(
-        [
-            Dense(60, activation = "relu"),
-            Dense(30, activation = "relu"),
-            Dense(20, activation = "relu"),
-            Dense(10, activation = "linear")
-        ],
-        name="model_selection_1"
-    )
-
-    model_3 = Sequential(
-        [
-            Dense(20, activation = "relu"),
-            Dense(20, activation = "relu"),
-            Dense(15, activation = "relu"),
-            Dense(15, activation = "relu"),
-            Dense(10, activation = "linear")
-        ],
-        name="model_selection_3"
-    )
-
-    list_models = [model_1, model_2, model_3]
-    
-    return list_models
-
-
-
-
-def fit_selected(X_train, y_train, epochs=50, iters=100):
+def fit(X_train, y_train, epochs=50, iters=100):
     
     """ Entrenando modelo base
     
@@ -98,17 +55,18 @@ def fit_selected(X_train, y_train, epochs=50, iters=100):
 
         model = Sequential(
             [
-                Input(shape = (784,)),
-                Dense(units = 40, activation = "relu", name = "Layer1"),
-                Dense(units = 20, activation = "relu", name = "Layer2"),
-                Dense(units = 10,  activation = "linear", name = "Layer3")
-            
-            ], name = "Base"
-        )
+                Input(shape=(784,)),
+                Dense(60, activation = "relu"),
+                Dense(30, activation = "relu"),
+                Dense(20, activation = "relu"),
+                Dense(10, activation = "linear")
+            ],
+        name = "Base"
+    )
 
         model.compile(
             loss = SparseCategoricalCrossentropy(from_logits=True),
-            optimizer = Adam(0.01),
+            optimizer = Adam(0.001),
         )
 
         results = model.fit(
@@ -121,13 +79,13 @@ def fit_selected(X_train, y_train, epochs=50, iters=100):
         fx = tf.nn.softmax(logits)
         
         # Guardando
-        store_model.append(model)
+        store_model.append({random_seed: model})
         loss = results.history["loss"]
-        store_loss.append(loss)
-        store_fx.append(fx)
+        store_loss.append({random_seed: loss})
+        store_fx.append({random_seed: fx})
     
         if i% math.ceil(iters/10) == 0:
-            print(f"Iteración #{i:4} finalizada")
+            print(f"Iteración #{i:3} finalizada")
 
 
     return store_model, store_loss, store_fx
