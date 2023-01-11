@@ -1,4 +1,3 @@
-# Hand-Written Digits Recognition
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -8,11 +7,10 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import tensorflow as tf
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.optimizers import Adam
+from functions import model_selection
 
-from functions import modelos_dr
 
-
-# Estimación ===============================================================
+# Data =====================================================================
 X_train = pd.read_pickle("./data/X_train.pkl")
 y_train = pd.read_pickle("./data/y_train.pkl")
 X_test = pd.read_pickle("./data/X_test.pkl")
@@ -57,19 +55,17 @@ de las 5 estimaciones.
 
 iteration_error = []
 
-for i in range(1, 5):
+for i in range(1, 6):
     
     train_error = []
-
-    modelos = modelos_dr.model_selection_list()
+    modelos = model_selection.selection_list()
     
     for model in modelos:
         
         model.compile(
                 loss = SparseCategoricalCrossentropy(from_logits=True),
-                optimizer = Adam(0.01),
-            )
-
+                optimizer = Adam(0.001),
+            )  
         print(f"Entrenando {model.name}. Iteración #{i}...")
 
         model.fit(
@@ -78,53 +74,39 @@ for i in range(1, 5):
             verbose = False
         )
         
-        print("Finalizado!\n")
+        # Selección del label con mayor probabilidad
+        logits = model.predict(X_test)
+        fx = tf.nn.softmax(logits)
         
-        # Creación del threshold
-        threshold = 0.5
-        yhat = model.predict(X_train)
-        yhat = tf.math.sigmoid(yhat)
-        yhat = np.where(yhat >= threshold, 1, 0)
-        train_error = np.mean(yhat != y_train)
-        train_error.append(train_error)
+        yhat = []
+        for j in range(len(fx)):
+            yhat.append(np.argmax(fx[j]))
+        
+        yhat = np.array([np.asarray(yhat)]).T
+        error = np.mean(yhat != y_test) # % de errores/total
+        train_error.append(error)
 
     iteration_error.append({i: train_error})
 
 
-# for j in range(len(train_error)):
-#     print(
-#         f"Modelo #{j+1}: MSE de entrenamiento: {train_error[j]:.5f}"
-#     )
+# Recuperando los MSE
+mse_m1 = []; mse_m2 = []; mse_m3 = []
+
+for i in iteration_error:
+    i = list(i.values())[0]
+    mse_m1.append(i[0])
+    mse_m2.append(i[1])
+    mse_m3.append(i[2])
 
 
+# MSE por modelo
+df_error = pd.DataFrame({"Modelo 1": mse_m1, "Modelo 2": mse_m2, "Modelo 3": mse_m3})
+df_error.index.name = "Iteraciones"
+df_error
 
-# Estimación del modelo seleccionado =======================================
-models, results, fx = modelos_dr.fit_selected(X_train, y_train, epochs=50, iters=100) # 2 horas aprox
+df_error_stats = pd.DataFrame({"Modelos": ["Modelo 1", "Modelo 2", "Modelo 3"], "Mediana": df_error.median(), "Std": df_error.std()})
+df_error_stats.set_index("Modelos", inplace=True)
+df_error_stats
 
-df = pd.DataFrame(results).T
-plt.plot(df)
-plt.show()
-
-
-
-# Función de pérdida =======================================================
-plt.figure(figsize=(6,4))
-
-plt.plot(results.history["loss"], color="black") 
-# https://stackoverflow.com/questions/62186595/standard-deviation-using-numpy
-
-plt.xlabel("# Iteraciones")
-plt.ylabel("Magnitud")
-plt.title("Magnitud de la función de pérdida por iteraciones")
-plt.savefig("./figures/log-loss.pdf")
-plt.show()
-
-
-# Gráfico label, predict
-
-
-# Gráfico de observaciones con errores
-
-
-
-
+df_error.to_csv("./data/model_selection_mse.csv")
+df_error_stats.to_csv("./data/model_selection_mse_stats.csv")
