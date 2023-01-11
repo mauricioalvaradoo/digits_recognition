@@ -1,4 +1,4 @@
-# Reconocimiento de dígitos mediante Redes Neuronales
+# Reconocimiento de dígitos mediante redes neuronales
 El proyecto fue desarrollado por Mauricio Alvarado y Marco Virú.
 
 ## Objetivo
