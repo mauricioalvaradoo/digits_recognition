@@ -44,8 +44,6 @@ df.head(10)
 # df = pd.read_csv("./results/model_selected_loss.csv")
 
 
-
-
 # Función de pérdida de modelo seleccionado ================================
 df_std_01 = df.quantile(q=0.01)
 df_std_16 = df.quantile(q=0.16)
@@ -73,12 +71,10 @@ plt.legend(loc="best", fontsize=8)
 plt.show()
 
 
-
-
 # Recuperamos modelo =======================================================
 # Usaré la combinación de uno de los seed ya estimados: "150"
 models, iters, loss, fx = model_selected.fit(X_train, y_train, epochs=100, iters=1, seed=150)
-
+model = models[0][150]
 
 yhat_train = []
 for j in range(len(fx[0][150])):
@@ -90,7 +86,7 @@ mse_train = np.mean(error_train) # MSE training: % de errores/total
 
 
 # Testing
-logits = models[0][150].predict(X_test)
+logits = model.predict(X_test)
 fx_test = tf.nn.softmax(logits)
 
 yhat_test = []
@@ -100,8 +96,6 @@ for j in range(len(fx_test)):
 yhat_test = np.array([np.asarray(yhat_test)]).T
 error_test = (yhat_test != y_test) # Error del testing set!
 mse_test = np.mean(error_test) # MSE testing: % de errores/total
-
-
 
 
 # Tabla con aciertos y desaciertos en set training =========================
@@ -117,7 +111,6 @@ plt.title("Matriz de confusión")
 plt.xlabel("Predicciones")
 plt.ylabel("Etiquetas")
 plt.savefig("./figures/confmatrix_train.png", bbox_inches="tight")
-
 
 
 # Tabla con aciertos y desaciertos en set testing ==========================
@@ -137,15 +130,53 @@ plt.savefig("./figures/confmatrix_testing.png", bbox_inches="tight")
 
 
 # Gráfico label vs predict (aciertos) ======================================
+m, n = X_test.shape
+pixeles = 28
+
+fig, axes = plt.subplots(6,6, figsize=(6,6))
+fig.tight_layout(pad=0.13,rect=[0, 0.03, 1, 0.85])
+np.random.seed(19) 
+
+for i, ax in enumerate(axes.flat):
+    random_index = np.random.randint(m)
+
+    X_resized = X_test[random_index].reshape((pixeles,pixeles))
+    ax.imshow(X_resized, cmap="gray")
+
+    ax.set_title(f"{y_test[random_index, 0]},{yhat_test[random_index, 0]}",fontsize=10)
+    ax.set_axis_off()
+fig.suptitle("Hits\nLabel, yhat", fontsize=14)
+plt.savefig("./figures/model_selection_digits_hits.png")
 
 
 
 # Gráfico label vs predict (errores) =======================================
+pixeles = 28
+
+idxs = np.where(yhat_test[:,0] != y_test[:,0])[0]
+if len(idxs) == 0:
+    print("No se encontraron errores!")
+else:
+    cnt = min(7, len(idxs))
+    fig, ax = plt.subplots(1,cnt, figsize=(5,2.2))
+    fig.tight_layout(pad=0.13,rect=[0, 0.25, 1, 0.8])
+
+for i in range(cnt):
+    j = idxs[i]
+
+    X_reshaped = X_test[j].reshape((pixeles,pixeles))
+    ax[i].imshow(X_reshaped, cmap='gray')
+
+    ax[i].set_title(f"{y_test[j,0]},{yhat_test[j,0]}",fontsize=10)
+    ax[i].set_axis_off()
+    fig.suptitle("Errors\nLabel, yhat", fontsize=12)
+plt.savefig("./figures/model_selection_digits_errors.png")
 
 
 
 # Guardado modelo ==========================================================
-# models[0][150]
+model.save("./results/model.h5")
 
-
-
+# !pip install tensorflowjs
+# !mkdir results/tfjs_target
+# !tensorflowjs_converter --input_format keras results/model.h5 results/tfjs_target
