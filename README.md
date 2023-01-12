@@ -1,6 +1,3 @@
-# Reconocimiento de dígitos mediante Redes Neuronales
-Desarrollar un modelo mediante redes neuronales para la clasificación de dígitos.
-
 
 ## 2. Datos
 Para el entrenamiento del modelo se usó la base de datos `The Mist Database` (http://yann.lecun.com/exdb/mnist/). Esta se encuentra divida en 60 mil imagénes de _training_ y 10 mil de _testing_. Para este proyecto se unira toda la base y se usará una propia división basado en el método `train_test_split` de `sklearn`.
