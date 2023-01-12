@@ -8,7 +8,7 @@ Para el entrenamiento del modelo se usó la base de datos `The Mist Database` (h
 Las imágenes son de 28x28 pixeles. Al ser transformadas en números, se vectorizan a 784 pixeles con valores entre 0-1. Cada columna será un pixel, y cada fila será una observación, de tal manera que el vector de explicativas es de 56 mil x 784.
 
 <p align="center">
-  <img src="figures/digits.png" width="700">
+  <img src="figures/digits.png" width="400">
 </p>
 
 
@@ -19,27 +19,27 @@ Las imágenes son de 28x28 pixeles. Al ser transformadas en números, se vectori
 ## 3. Resultados
 ### 3.1 Selección de modelo
 <p align="center">
-  <img src="figures/model_selection_mse_stats.png" width="700">
+  <img src="figures/model_selection_mse_stats.png" width="400">
 </p>
 
 
 ### 3.2 Función de pérdida
 <p align="center">
-  <img src="figures/selected-loss.png" width="700">
+  <img src="figures/selected-loss.png" width="400">
 </p>
 
 
 ### 3.3 Predicciones
 <p align="center">
-  <img src="figures/confmatrix_testing.png" width="700">
+  <img src="figures/confmatrix_testing.png" width="400">
 </p>
 
 <p align="center">
-  <img src="figures/model_selection_digits_hits.png" width="700">
+  <img src="figures/model_selection_digits_hits.png" width="400">
 </p>
 
 <p align="center">
-  <img src="figures/model_selection_digits_errors.png" width="700">
+  <img src="figures/model_selection_digits_errors.png" width="400">
 </p>
 
 
