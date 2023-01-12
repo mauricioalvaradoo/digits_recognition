@@ -10,7 +10,7 @@ from tensorflow.keras.optimizers import Adam
 
 
 
-def fit(X_train, y_train, epochs=50, iters=100):
+def fit(X_train, y_train, epochs=100, iters=100, seed=None):
     
     """ Entrenando modelo base
     
@@ -28,7 +28,9 @@ def fit(X_train, y_train, epochs=50, iters=100):
     Retorno
     ----------
     store_model: list
-        Modelos
+        Historia de los modelos
+    store_iters: list
+        Historia de las seeds que generan cada cadena
     store_loss: list
         Historia de las funciones de pérdida por cadena
     store_fx: list
@@ -37,22 +39,28 @@ def fit(X_train, y_train, epochs=50, iters=100):
     Arquitectura neuronal
     ---------------------
     * Layer0 = Insumos
-    * Layer1 = 40 neuronas
-    * Layer2 = 20 neuronas
-    * Layer3 = 10 neuronas
-
+    * Layer1 = 60 neuronas
+    * Layer2 = 30 neuronas
+    * Layer3 = 20 neuronas
+    * Layer4 = 10 neuronas
 
     """
     
     store_model = []
-    store_loss = []
+    list_loss = []
     store_fx = []
 
     for i in range(1, iters+1):
         
-        random_seed = int(random.choice(np.linspace(1, 10000, 10000)))
-        tf.random.set_seed(random_seed)
-
+        
+        if seed is None:
+            random_seed = int(random.choice(np.linspace(1, 10000, 10000)))
+            tf.random.set_seed(random_seed)
+        else:
+            random_seed = seed
+            tf.random.set_seed(random_seed)
+            
+            
         model = Sequential(
             [
                 Input(shape=(784,)),
@@ -61,8 +69,8 @@ def fit(X_train, y_train, epochs=50, iters=100):
                 Dense(20, activation = "relu"),
                 Dense(10, activation = "linear")
             ],
-        name = "Base"
-    )
+            name = "Base"
+        )
 
         model.compile(
             loss = SparseCategoricalCrossentropy(from_logits=True),
@@ -76,16 +84,25 @@ def fit(X_train, y_train, epochs=50, iters=100):
         )
 
         logits = model.predict(X_train)
-        fx = tf.nn.softmax(logits)
+        fx_train = tf.nn.softmax(logits)
         
         # Guardando
         store_model.append({random_seed: model})
         loss = results.history["loss"]
-        store_loss.append({random_seed: loss})
-        store_fx.append({random_seed: fx})
+        list_loss.append({random_seed: loss})
+        store_fx.append({random_seed: fx_train})
     
         if i% math.ceil(iters/10) == 0:
             print(f"Iteración #{i:3} finalizada")
 
 
-    return store_model, store_loss, store_fx
+    store_iters = []
+    store_loss = []
+
+    for j in list_loss:
+        store_iters.append(list(j.keys())[0])
+        store_loss.append(list(j.values())[0])
+
+
+    return store_model, store_iters, store_loss, store_fx
+
