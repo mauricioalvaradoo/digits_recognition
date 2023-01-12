@@ -46,7 +46,7 @@ Los modelos, dadao diferentes arquitecturas neuronales, son los siguientes:
 ### 3.1 Selección de modelo
 Tras la estimación de los modelos, los resultados se presentan a continuación:
 <p align="center">
-  <img src="figures/model_selection_mse_stats.png" width="500">
+  <img src="figures/model_selection_mse_stats.png" width="600">
 </p>
 Se encuentra que el modelo 2 cuenta con la menor mediana y con una de las menores desviaciones estándar entre las tres propuestas. De manera individual, también se encontró que en cada una de las diez iteraciones el MSE del modelo 2 era menor al de los demás modelos. Es por esto que se puede concluir, de manera robusta, que la arquitectura neuronal del modelo 2 cuenta con mejor ajuste que el de los demás, y será el seleccionado para las estimaciones.
 
