@@ -8,7 +8,7 @@ Para el entrenamiento del modelo se usó la base de datos `The Mist Database` (h
 Las imágenes son de 28x28 pixeles. Al ser transformadas en números, se vectorizan a 784 pixeles con valores entre 0-1. Cada columna será un pixel, y cada fila será una observación, de tal manera que el vector de explicativas es de 56 mil x 784.
 
 <p align="center">
-  <img src="figures/digits.png" width="400">
+  <img src="figures/digits.png" width="500">
 </p>
 
 
