@@ -74,7 +74,7 @@ Se puede observar las siguientes figuras con imágenes tomadas aleatoreamente co
   <img src="figures/model_selection_digits_hits.png" width="500">
 </p>
 También se puede observar las figuras de aquellos dígitos que no lograron ser estimados. Al parecer la razón por la que la red neuronal falló al estimarlos es porque los dígitos fueron redactados en posiciones o formas que este tipo de redes neuronales no son capaces de entender, debido a sus limitaciones en cuanto a reconocer patrones:
-</br>
+</br> </br>
 <p align="center">
   <img src="figures/model_selection_digits_errors.png" width="500">
 </p>
