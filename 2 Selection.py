@@ -7,7 +7,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import tensorflow as tf
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.optimizers import Adam
-from functions import model_selection
+from functions import model_selection, table
 
 
 # Data =====================================================================
@@ -48,14 +48,14 @@ Modelo_3:
     * Layer5 = 10 neuronas
 
 Se comparán los resultados mediante MSE, debido a que el layer final es lineal.
-Para todos se estimará con 200 epochs y 5 veces. El MSE final será el promedio
-de las 5 estimaciones.
+Para todos se estimará con 100 epochs y 10 veces. El MSE final será el promedio
+de las 10 estimaciones.
 """
 
 
 iteration_error = []
 
-for i in range(1, 6):
+for i in range(1, 11):
     
     train_error = []
     modelos = model_selection.selection_list()
@@ -70,7 +70,7 @@ for i in range(1, 6):
 
         model.fit(
             X_train, y_train,
-            epochs = 200,
+            epochs = 100,
             verbose = False
         )
         
@@ -99,14 +99,28 @@ for i in iteration_error:
     mse_m3.append(i[2])
 
 
-# MSE por modelo
+
+# MSE modelos e iteraciones ================================================
 df_error = pd.DataFrame({"Modelo 1": mse_m1, "Modelo 2": mse_m2, "Modelo 3": mse_m3})
 df_error.index.name = "Iteraciones"
+df_error.to_csv("./results/model_selection_mse.csv")
 df_error
 
+df_error = np.round(df_error, 4)
+fig, ax = table.to_figure(df_error.reset_index(), header_columns=0, col_width=2.0)
+fig.savefig("./figures/model_selection_mse.png")
+
+
+# MSE modelos y estadísticas =============================================== 
 df_error_stats = pd.DataFrame({"Modelos": ["Modelo 1", "Modelo 2", "Modelo 3"], "Mediana": df_error.median(), "Std": df_error.std()})
 df_error_stats.set_index("Modelos", inplace=True)
+df_error_stats.to_csv("./results/model_selection_mse_stats.csv")
 df_error_stats
 
-df_error.to_csv("./data/model_selection_mse.csv")
-df_error_stats.to_csv("./data/model_selection_mse_stats.csv")
+df_error_stats = np.round(df_error_stats, 4)
+fig, ax = table.to_figure(df_error_stats.reset_index(), header_columns=0, col_width=2.0)
+fig.savefig("./figures/model_selection_mse_stats.png")
+
+
+
+

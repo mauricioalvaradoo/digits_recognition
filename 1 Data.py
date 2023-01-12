@@ -7,8 +7,12 @@ _testing_. Para este proyecto se unira toda la base y se separara posteriormente
 con `sklearn`.
 
 Dado que el dataset original contiene imagenes de 28x28 pixeles, al transformarlos
-a formato numerico se colocan de manera horizontal donde 28x28 = 784. En este caso,
-hay 56 mil imagenes. Las columnas representan los pixeles que han sido vectorizados. 
+a formato numerico se colocan de manera horizontal donde 28x28 = 784. Las columnas
+representan los pixeles que han sido vectorizados. 
+
+Al realizar el train_test_split, se reserva un 20% de la muestra para testear los
+resultados. El training sample tendrá 56 mil observaciones.
+
 """""
 
 import pandas as pd
@@ -31,7 +35,7 @@ y_df = pd.DataFrame(y)
 
 # Propia separacion
 X_train, X_test, y_train, y_test\
-    = train_test_split(X_df, y_df, test_size=0.3, random_state=19)
+    = train_test_split(X_df, y_df, test_size=0.2, random_state=19)
 
 
 # Reset index
@@ -70,7 +74,7 @@ for i, ax in enumerate(axs.flat):
     ax.set_title(int(y_train[random_index])) # Labels
     ax.set_axis_off()
 
-plt.savefig("./figures/digits.pdf")
+plt.savefig("./figures/digits.png")
 
 
 

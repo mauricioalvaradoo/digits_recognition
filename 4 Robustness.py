@@ -1,3 +1,10 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+import tensorflow as tf
+
+
 """
 Los ejercicios de robustez que se realizarán están dividos en dos grupos:
 1: Diferentes cantidades de epoch
@@ -11,6 +18,7 @@ Los ejercicios de robustez que se realizarán están dividos en dos grupos:
     (f) El 90 %
 
 Se compararán los resultados mediante MSE
+
 """
 
 
