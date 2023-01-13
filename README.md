@@ -83,5 +83,5 @@ También se puede observar las figuras de aquellos dígitos que no lograron ser 
 ## 4. Conclusiones
 1. Modelo de clasificación de imágenes cuenta con gran ajuste en los sets de train y test. El margen de error es muy pequeño.
 2. Resultados robustos a diferentes valores iniciales, tomados al azar.
-3. Los errores encontrados son propios del uso de redes neuronales NO convolucionales. En este caso, el train parte del reconocimiento de pixeles y no de patrones, lo cual lo hace propio a buscar que los pixeles estén posicionados en la misma celda basado en cómo fueron entrenados.
-  * Para este tipo de situaciones mejor usar redes neuronales convolucionales debido a que esas estructuras buscan patrones similares, y podrían reconocer dígitos pese a que en las imágenes hayan sido rotados levemente.
+3. Los errores encontrados son propios del uso de redes neuronales NO convolucionales. En este caso, el train parte del reconocimiento de pixeles y no de patrones, lo cual lo hace buscar colores en las mismas celdas en las que fue entrenadada.
+  * Para este tipo de situaciones mejor usar redes neuronales convolucionales debido a que estas estructuras buscan patrones similares, y podrían reconocer dígitos pese a que en las imágenes hayan sido rotados levemente o escritas en celdas diferentes.
