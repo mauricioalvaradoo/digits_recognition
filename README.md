@@ -44,7 +44,7 @@ Los modelos, dadao diferentes arquitecturas neuronales, son los siguientes:
 
 ## 3. Resultados
 ### 3.1 Selección de modelo
-Tras la estimación de los modelos, cada uno 10 veces con diferentes valores iniciales, los errores son los siguientes:
+Tras la estimación de los modelos, cada uno diez veces con diferentes valores iniciales, los errores son los siguientes:
 <p align="center">
   <img src="figures/model_selection_mse_stats.png" width="600">
 </p>
