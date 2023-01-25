@@ -1,5 +1,5 @@
 # Reconocimiento de dígitos mediante redes neuronales
-Desarrollar un modelo mediante redes neuronales para la clasificación de dígitos.
+Desarrollar un modelo mediante redes neuronales (no convolucionales) para la clasificación de dígitos.
 
 
 ## 1. Datos
