@@ -3,9 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import tensorflow as tf
-from sklearn.metrics import (classification_report, confusion_matrix,
-                             ConfusionMatrixDisplay)
-from functions import model_selected
+from sklearn.metrics import (
+    classification_report, confusion_matrix, ConfusionMatrixDisplay
+)
+import utils
 
 
 # Data =====================================================================
@@ -25,7 +26,8 @@ y_test = np.asarray(y_test)
 # La propuesta del modelo 2 terminó siendo la seleccionada.
 
 Modelo base (2):
-    * Layer0 = Insumos
+    * Convolucional = 32 capas
+    * Pooling = 2x2
     * Layer1 = 60 neuronas
     * Layer2 = 30 neuronas
     * Layer3 = 20 neuronas
@@ -33,7 +35,7 @@ Modelo base (2):
 
 """
 
-models, iters, loss, fx = model_selected.fit(X_train, y_train, epochs=100, iters=100)
+models, iters, loss, fx = utils.model_selected(X_train, y_train, epochs=100, iters=100)
 
 
 # Filas: Iteraciones a diferentes seeds , Columnas: Epochs
@@ -73,14 +75,14 @@ plt.show()
 
 # Recuperamos modelo =======================================================
 # Usaré la combinación de uno de los seed ya estimados: "150"
-models, iters, loss, fx = model_selected.fit(X_train, y_train, epochs=100, iters=1, seed=150)
+models, iters, loss, fx = utils.model_selected(X_train, y_train, epochs=100, iters=1, seed=150)
 model = models[0][150]
 
 yhat_train = []
 for j in range(len(fx[0][150])):
     yhat_train.append(np.argmax(fx[0][150][j]))
 
-yhat_train = np.array([np.asarray(yhat_train)]).T
+yhat_train = np.array([np.asarray(yhat_train)])
 error_train = (yhat_train != y_train) # Error del training set!
 mse_train = np.mean(error_train) # MSE training: % de errores/total
 
