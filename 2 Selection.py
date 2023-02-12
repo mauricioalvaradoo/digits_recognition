@@ -29,12 +29,16 @@ Se proponen tres arquitecturas neuronales diferentes:
 Modelo_1:
     * Convolucional = 32 capas
     * Pooling = 2x2
+    * Convolucional = 64 capas
+    * Pooling = 2x2
     * Layer1 = 40 neuronas
     * Layer2 = 20 neuronas
     * Layer3 = 10 neuronas
 
 Modelo_2:
     * Convolucional = 32 capas
+    * Pooling = 2x2
+    * Convolucional = 64 capas
     * Pooling = 2x2
     * Layer1 = 60 neuronas
     * Layer2 = 30 neuronas
@@ -43,6 +47,8 @@ Modelo_2:
 
 Modelo_3:
     * Convolucional = 32 capas
+    * Pooling = 2x2
+    * Convolucional = 64 capas
     * Pooling = 2x2
     * Layer1 = 20 neuronas
     * Layer2 = 20 neuronas
@@ -61,17 +67,19 @@ de las 10 estimaciones.
 # Callbacks -> Frenar estimación cuando se alcance MSE (0.01) o ajuste (99.5%)
 class myCallback(Callback):
     def on_epoch_end(self, epoch, logs={}):
-        if ((logs.get("loss")<0.01) or (logs.get("accuracy")>0.995)):
+        if ((logs.get("loss")<0.001) or (logs.get("accuracy")>0.995)):
             self.model.stop_training = True
 callbacks = myCallback()
 
 
 # Model Selection
 iteration_error = []
+iteration_accur = []
 
 for i in range(1, 11):
     
     train_error = []
+    train_accur = []
     modelos = utils.selection_list()
     
     for model in modelos:
@@ -83,7 +91,7 @@ for i in range(1, 11):
         )  
         print(f"Entrenando {model.name}. Iteración #{i}...")
 
-        model.fit(
+        history = model.fit(
             X_train, y_train,
             epochs = 100,
             verbose = False,
@@ -98,11 +106,17 @@ for i in range(1, 11):
         for j in range(len(fx)):
             yhat.append(np.argmax(fx[j]))
         
+        # Porcentaje Error/Total
         yhat = np.array([np.asarray(yhat)])
-        error = np.mean(yhat != y_test) # % de errores/total
+        error = np.mean(yhat != y_test)
         train_error.append(error)
-
-    train_error.append({i: train_error})
+        
+        # Ajuste
+        train_accur.append(history.history["accuracy"][-1])
+        
+        
+    iteration_error.append({i: train_error})
+    iteration_accur.append({i: train_accur})
 
 
 # Recuperando los MSE
@@ -114,9 +128,18 @@ for i in iteration_error:
     mse_m2.append(i[1])
     mse_m3.append(i[2])
 
+# Recuperando los ajustes
+acc_m1 = []; acc_m2 = []; acc_m3 = []
+
+for i in iteration_accur:
+    i = list(i.values())[0]
+    acc_m1.append(i[0])
+    acc_m2.append(i[1])
+    acc_m3.append(i[2])
 
 
-# MSE modelos e iteraciones ================================================
+
+# MSE modelos e iteraciones ===================================================
 df_error = pd.DataFrame({"Modelo 1": mse_m1, "Modelo 2": mse_m2, "Modelo 3": mse_m3})
 df_error.index.name = "Iteraciones"
 df_error.to_csv("./results/model_selection_mse.csv")
@@ -127,15 +150,33 @@ fig, ax = utils.to_figure(df_error.reset_index(), header_columns=0, col_width=2.
 fig.savefig("./figures/model_selection_mse.png")
 
 
-# MSE modelos y estadísticas =============================================== 
-df_error_stats = pd.DataFrame({"Modelos": ["Modelo 1", "Modelo 2", "Modelo 3"], "Mediana": df_error.median(), "Std": df_error.std()})
-df_error_stats.set_index("Modelos", inplace=True)
-df_error_stats.to_csv("./results/model_selection_mse_stats.csv")
-df_error_stats
+# Ajuste modelos e iteraciones ================================================
+df_accu = pd.DataFrame({"Modelo 1": acc_m1, "Modelo 2": acc_m2, "Modelo 3": acc_m3})
+df_accu.index.name = "Iteraciones"
+df_accu.to_csv("./results/model_selection_acc.csv")
+df_accu
 
-df_error_stats = np.round(df_error_stats, 4)
-fig, ax = utils.to_figure(df_error_stats.reset_index(), header_columns=0, col_width=2.0)
-fig.savefig("./figures/model_selection_mse_stats.png")
+df_accu = np.round(df_accu, 4)
+fig, ax = utils.to_figure(df_accu.reset_index(), header_columns=0, col_width=2.0)
+fig.savefig("./figures/model_selection_acc.png")
+
+
+# MSE y ajuste modelos y estadísticas =========================================
+df_stats = pd.DataFrame({
+    "Modelos": ["Modelo 1", "Modelo 2", "Modelo 3"],
+     "Error": df_error.median(),
+     r"Std error": df_error.std(),
+     "Ajuste": df_accu.median(),
+     r"Std ajuste": df_accu.std(),
+})
+
+df_stats.set_index("Modelos", inplace=True)
+df_stats.to_csv("./results/model_selection_stats.csv")
+df_stats
+
+df_stats = np.round(df_stats, 4)
+fig, ax = utils.to_figure(df_stats.reset_index(), header_columns=0, col_width=2.0)
+fig.savefig("./figures/model_selection_stats.png")
 
 
 

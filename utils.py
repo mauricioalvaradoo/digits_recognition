@@ -6,15 +6,13 @@ import matplotlib.pyplot as plt
 
 import tensorflow as tf
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPooling2D
-from tensorflow.keras import Sequential, Input
+from tensorflow.keras import Sequential
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import Callback
-from numba import njit
 
 
 
-@njit
 def selection_list():
     
     random_seed = int(random.choice(np.linspace(1, 10_000, 10_000)))
@@ -24,6 +22,8 @@ def selection_list():
     model_1 = Sequential(
         [
             Conv2D(32, (3,3), activation="relu", input_shape=(28, 28, 1)),
+            MaxPooling2D(2, 2),
+            Conv2D(64, (3,3), activation="relu"),
             MaxPooling2D(2, 2),
             Flatten(),
             Dense(40, activation = "relu", name="Layer1"),
@@ -37,6 +37,8 @@ def selection_list():
         [
             Conv2D(32, (3,3), activation="relu", input_shape=(28, 28, 1)),
             MaxPooling2D(2, 2),
+            Conv2D(64, (3,3), activation="relu"),
+            MaxPooling2D(2, 2),
             Flatten(),
             Dense(60, activation = "relu", name="Layer1"),
             Dense(30, activation = "relu", name="Layer2"),
@@ -49,6 +51,8 @@ def selection_list():
     model_3 = Sequential(
         [
             Conv2D(32, (3,3), activation="relu", input_shape=(28, 28, 1)),
+            MaxPooling2D(2, 2),
+            Conv2D(64, (3,3), activation="relu"),
             MaxPooling2D(2, 2),
             Flatten(),
             Dense(20, activation = "relu", name="Layer1"),
@@ -65,8 +69,8 @@ def selection_list():
     return list_models
 
 
-@njit
-def model_selected(X_train, y_train, epochs=100, iters=100, seed=None):
+
+def model_selected(X_train, y_train, epochs=100, iters=50, seed=None):
     
     """ Entrenando modelo base
     
@@ -96,6 +100,8 @@ def model_selected(X_train, y_train, epochs=100, iters=100, seed=None):
     ---------------------
     * Convolucional = 32 capas
     * Pooling = 2x2
+    * Convolucional = 64 capas
+    * Pooling = 2x2
     * Layer1 = 60 neuronas
     * Layer2 = 30 neuronas
     * Layer3 = 20 neuronas
@@ -114,6 +120,7 @@ def model_selected(X_train, y_train, epochs=100, iters=100, seed=None):
     store_model = []
     list_loss = []
     store_fx = []
+    list_acc = []
 
     for i in range(1, iters+1):
         
@@ -129,6 +136,8 @@ def model_selected(X_train, y_train, epochs=100, iters=100, seed=None):
         model = Sequential(
             [
                 Conv2D(32, (3,3), activation="relu", input_shape=(28, 28, 1)),
+                MaxPooling2D(2, 2),
+                Conv2D(64, (3,3), activation="relu", input_shape=(28, 28, 1)),
                 MaxPooling2D(2, 2),
                 Flatten(),
                 Dense(60, activation = "relu"),
@@ -160,6 +169,7 @@ def model_selected(X_train, y_train, epochs=100, iters=100, seed=None):
         loss = results.history["loss"]
         list_loss.append({random_seed: loss})
         store_fx.append({random_seed: fx_train})
+        list_acc.append({random_seed: results.history["accuracy"][-1]})
     
         if i% math.ceil(iters/10) == 0:
             print(f"Iteración #{i:3} finalizada")
@@ -167,13 +177,18 @@ def model_selected(X_train, y_train, epochs=100, iters=100, seed=None):
 
     store_iters = []
     store_loss = []
+    store_acc = []
 
     for j in list_loss:
         store_iters.append(list(j.keys())[0])
         store_loss.append(list(j.values())[0])
+    
+    for j in list_acc:
+        store_acc.append(list(j.values())[0])
+    
 
+    return store_model, store_iters, store_loss, store_acc, store_fx
 
-    return store_model, store_iters, store_loss, store_fx
 
 
 
