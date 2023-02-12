@@ -55,7 +55,7 @@ La manera más concreta de entender si los resultados que se encuentran en el mo
 
 No obstante, el MSE es una métrica final. Es decir, es un resultado concreto post estimación. Por su parte, la función de pérdida nos permite observar la dinámica de los errores por cada epoch. Dado el modelo seleccionado, se estimó 100 veces, cada una con un valor inicial tomado al azar. Los resultados de la mediana, bandas de confianza de 68% y 98% se pueden encontrar a continuación:
 <p align="center">
-  <img src="figures/selected-loss.png" width="600">
+  <img src="figures/selected-los.png" width="600">
 </p>
 
 Como se observa, los resultados nuevamente son muy robustos. Pese a que se tome diferentes valores iniciales, la función de pérdida converge rápidamente a valores cercanos a cero y con alta confianza. Se puede concluir que el valor inicial no afectará a la estimación debido a que aún así se converge al valor real.
